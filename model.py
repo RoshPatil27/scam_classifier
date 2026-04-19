@@ -1,17 +1,26 @@
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
 
 def train_model():
     df = pd.read_csv("dataset.csv")
 
-    X = df["text"]
-    y = df["label"]
+    spam_words = set()
+    ham_words = set()
 
-    vectorizer = CountVectorizer()
-    X_vec = vectorizer.fit_transform(X)
+    for _, row in df.iterrows():
+        words = row["text"].lower().split()
 
-    model = MultinomialNB()
-    model.fit(X_vec, y)
+        if row["label"] == 1:
+            spam_words.update(words)
+        else:
+            ham_words.update(words)
 
-    return model, vectorizer
+    return spam_words, ham_words
+
+
+def predict(message, spam_words, ham_words):
+    words = message.lower().split()
+
+    spam_score = sum(word in spam_words for word in words)
+    ham_score = sum(word in ham_words for word in words)
+
+    return 1 if spam_score > ham_score else 0

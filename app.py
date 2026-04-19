@@ -1,18 +1,17 @@
 import streamlit as st
-from model import train_model
+from model import train_model, predict
 
-st.title("📧 Spam Email Classifier")
+st.title("📧 Spam Email Classifier (No ML Library)")
 
-model, vectorizer = train_model()
+spam_words, ham_words = train_model()
 
 user_input = st.text_area("Enter a message")
 
 if st.button("Check"):
     if user_input:
-        input_vec = vectorizer.transform([user_input])
-        prediction = model.predict(input_vec)
+        result = predict(user_input, spam_words, ham_words)
 
-        if prediction[0] == 1:
+        if result == 1:
             st.error("🚫 This is SPAM")
         else:
             st.success("✅ This is NOT SPAM")
